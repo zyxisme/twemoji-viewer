@@ -4030,10 +4030,14 @@
     let isUpperCase = false;
     let filteredEmojis = [];
 
+    // Current category filter
+    let currentCategory = 'all';
+
     // Initialize application
     function init() {
       const savedCase = localStorage.getItem('twemoji-case');
       const savedPageSize = localStorage.getItem('twemoji-page-size');
+      const savedCategory = localStorage.getItem('twemoji-category');
 
       if (savedCase === 'upper') {
         isUpperCase = true;
@@ -4045,9 +4049,12 @@
         document.getElementById('pageSizeSelect').value = pageSize;
       }
 
-      filteredEmojis = [...EMOJI_LIST];
-      renderGrid();
-      renderPagination();
+      if (savedCategory) {
+        currentCategory = savedCategory;
+        document.getElementById('categorySelect').value = currentCategory;
+      }
+
+      filterEmojis();
     }
 
     // Get emoji image URL
@@ -4878,17 +4885,24 @@
       return btn;
     }
 
-    // Search emojis by shortcode and emoji names
-    function searchEmojis(query) {
-      if (!query || !query.trim()) {
-        filteredEmojis = [...EMOJI_LIST];
-      } else {
-        var q = query.trim().toLowerCase();
-        filteredEmojis = EMOJI_LIST.filter(function(codepoint) {
-          // Search by shortcode
-          if (codepoint.toLowerCase().indexOf(q) !== -1) return true;
-          // Search by emoji names
-          var names = EMOJI_NAMES[codepoint];
+    // Filter emojis by category and search query
+    function filterEmojis() {
+      let result = EMOJI_LIST;
+
+      // Filter by category
+      if (currentCategory !== 'all') {
+        result = result.filter(function(cp) {
+          return getEmojiCategory(cp) === currentCategory;
+        });
+      }
+
+      // Filter by search query
+      const query = document.querySelector('.search-input').value.trim();
+      if (query) {
+        const q = query.toLowerCase();
+        result = result.filter(function(cp) {
+          if (cp.toLowerCase().indexOf(q) !== -1) return true;
+          const names = EMOJI_NAMES[cp];
           if (names) {
             if (names.en && names.en.toLowerCase().indexOf(q) !== -1) return true;
             if (names.zh && names.zh.toLowerCase().indexOf(q) !== -1) return true;
@@ -4896,6 +4910,8 @@
           return false;
         });
       }
+
+      filteredEmojis = result;
       currentPage = 1;
       renderGrid();
       renderPagination();
@@ -4903,12 +4919,12 @@
 
     // Event listeners
     document.getElementById('searchBtn').addEventListener('click', function() {
-      searchEmojis(document.querySelector('.search-input').value);
+      filterEmojis();
     });
 
     document.querySelector('.search-input').addEventListener('keydown', function(e) {
       if (e.key === 'Enter') {
-        searchEmojis(document.querySelector('.search-input').value);
+        filterEmojis();
       }
     });
 
@@ -4925,6 +4941,13 @@
       this.classList.toggle('active');
       localStorage.setItem('twemoji-case', isUpperCase ? 'upper' : 'lower');
       renderGrid();
+    });
+
+    // Category filter
+    document.getElementById('categorySelect').addEventListener('change', function() {
+      currentCategory = this.value;
+      localStorage.setItem('twemoji-category', currentCategory);
+      filterEmojis();
     });
 
     // Initialize when DOM is ready
