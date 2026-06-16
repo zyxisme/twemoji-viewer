@@ -10,7 +10,8 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from generate_flag_names import (
     extract_flag_data,
     match_flags_to_emoji_list,
-    generate_search_names
+    generate_search_names,
+    merge_emoji_names
 )
 
 
@@ -224,6 +225,91 @@ class TestGenerateSearchNames(unittest.TestCase):
 
         # Should be "flag China CN"
         self.assertEqual(result['1f1e8-1f1f3']['en'], 'flag China CN')
+
+
+class TestMergeEmojiNames(unittest.TestCase):
+    """Test merge_emoji_names function"""
+
+    def test_merge_basic(self):
+        """Test basic merge operation"""
+        existing = {
+            '1f446': {'en': 'point up', 'zh': '手指向上 指'}
+        }
+        new_names = {
+            '1f1e8-1f1f3': {'en': 'flag China CN', 'zh': '中国'}
+        }
+
+        result = merge_emoji_names(existing, new_names)
+
+        self.assertEqual(len(result), 2)
+        self.assertIn('1f446', result)
+        self.assertIn('1f1e8-1f1f3', result)
+
+    def test_merge_preserves_existing(self):
+        """Test that existing entries are preserved"""
+        existing = {
+            '1f446': {'en': 'point up', 'zh': '手指向上 指'}
+        }
+        new_names = {
+            '1f1e8-1f1f3': {'en': 'flag China CN', 'zh': '中国'}
+        }
+
+        result = merge_emoji_names(existing, new_names)
+
+        self.assertEqual(result['1f446']['en'], 'point up')
+        self.assertEqual(result['1f446']['zh'], '手指向上 指')
+
+    def test_merge_adds_new(self):
+        """Test that new entries are added"""
+        existing = {
+            '1f446': {'en': 'point up', 'zh': '手指向上 指'}
+        }
+        new_names = {
+            '1f1e8-1f1f3': {'en': 'flag China CN', 'zh': '中国'}
+        }
+
+        result = merge_emoji_names(existing, new_names)
+
+        self.assertEqual(result['1f1e8-1f1f3']['en'], 'flag China CN')
+        self.assertEqual(result['1f1e8-1f1f3']['zh'], '中国')
+
+    def test_merge_overwrites_duplicate(self):
+        """Test that duplicate keys are overwritten"""
+        existing = {
+            '1f1e8-1f1f3': {'en': 'old name', 'zh': '旧名称'}
+        }
+        new_names = {
+            '1f1e8-1f1f3': {'en': 'flag China CN', 'zh': '中国'}
+        }
+
+        result = merge_emoji_names(existing, new_names)
+
+        self.assertEqual(result['1f1e8-1f1f3']['en'], 'flag China CN')
+        self.assertEqual(result['1f1e8-1f1f3']['zh'], '中国')
+
+    def test_merge_empty_existing(self):
+        """Test merging with empty existing dictionary"""
+        existing = {}
+        new_names = {
+            '1f1e8-1f1f3': {'en': 'flag China CN', 'zh': '中国'}
+        }
+
+        result = merge_emoji_names(existing, new_names)
+
+        self.assertEqual(len(result), 1)
+        self.assertIn('1f1e8-1f1f3', result)
+
+    def test_merge_empty_new(self):
+        """Test merging with empty new names"""
+        existing = {
+            '1f446': {'en': 'point up', 'zh': '手指向上 指'}
+        }
+        new_names = {}
+
+        result = merge_emoji_names(existing, new_names)
+
+        self.assertEqual(len(result), 1)
+        self.assertIn('1f446', result)
 
 
 if __name__ == '__main__':
