@@ -59,6 +59,40 @@ def match_flags_to_emoji_list(flags, emoji_list):
     return matched
 
 
+def generate_search_names(matched_flags, country_names_cn):
+    """Generate search names for flags
+
+    Args:
+        matched_flags: Dictionary from match_flags_to_emoji_list
+        country_names_cn: Dictionary mapping country code to Chinese name
+
+    Returns:
+        Dictionary mapping codepoints to search name dict with 'en' and 'zh'
+    """
+    names = {}
+    for codepoints, flag_info in matched_flags.items():
+        country_code = flag_info['country_code']
+        english_name = flag_info['name']
+
+        # Extract country name (remove "flag " prefix if present)
+        if english_name.startswith('flag '):
+            country_name = english_name[5:]
+        else:
+            country_name = english_name
+
+        # Generate English search name
+        en_name = f"flag {country_name} {country_code}"
+
+        # Generate Chinese search name (fallback to English name)
+        zh_name = country_names_cn.get(country_code, english_name)
+
+        names[codepoints] = {
+            'en': en_name,
+            'zh': zh_name
+        }
+    return names
+
+
 if __name__ == '__main__':
     # Main execution will be added in later tasks
     pass
