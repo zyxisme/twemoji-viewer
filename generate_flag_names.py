@@ -25,10 +25,14 @@ def extract_flag_data(emoji_data):
                 codepoints.append(cp)
 
             if len(codepoints) == 2:
+                # Verify both codepoints are regional indicators (U+1F1E6..U+1F1FF)
+                values = [int(cp, 16) for cp in codepoints]
+                if not all(0x1F1E6 <= v <= 0x1F1FF for v in values):
+                    continue
                 # This is a country/region flag
                 country_code = ''.join(
-                    chr(int(cp, 16) - 0x1F1E6 + ord('A'))
-                    for cp in codepoints
+                    chr(v - 0x1F1E6 + ord('A'))
+                    for v in values
                 )
                 flags[country_code] = {
                     'emoji': emoji_char,
