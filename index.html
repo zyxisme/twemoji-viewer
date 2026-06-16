@@ -169,7 +169,7 @@
       align-items: center;
       justify-content: center;
       width: 60px;
-      height: 60px;
+      height: 75px;
       background: var(--canvas);
       border: 1px solid var(--hairline);
       border-radius: 4px;
@@ -202,6 +202,17 @@
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+    }
+
+    .emoji-name {
+      font-size: 9px;
+      color: var(--mute);
+      text-align: center;
+      width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      margin-top: 1px;
     }
 
     /* Pagination */
@@ -7870,8 +7881,20 @@
         label.className = 'emoji-label';
         label.textContent = formatShortcode(codepoint);
 
+        // Add emoji name if available
+        const nameDiv = document.createElement('div');
+        nameDiv.className = 'emoji-name';
+        const emojiData = EMOJI_NAMES[codepoint];
+        if (emojiData) {
+          nameDiv.textContent = currentLang === 'zh' ? (emojiData.zh || emojiData.en) : emojiData.en;
+          nameDiv.title = currentLang === 'zh' ? emojiData.en : (emojiData.zh || emojiData.en);
+        } else {
+          nameDiv.textContent = '';
+        }
+
         card.appendChild(img);
         card.appendChild(label);
+        card.appendChild(nameDiv);
         card.addEventListener('click', function() {
           copyToClipboard(codepoint, card);
         });
