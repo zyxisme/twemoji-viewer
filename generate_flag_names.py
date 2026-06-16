@@ -93,6 +93,21 @@ def generate_search_names(matched_flags, country_names_cn):
     return names
 
 
+def merge_emoji_names(existing_names, new_names):
+    """Merge new names into existing EMOJI_NAMES
+
+    Args:
+        existing_names: Current EMOJI_NAMES dictionary
+        new_names: New names to merge in
+
+    Returns:
+        Merged dictionary
+    """
+    merged = existing_names.copy()
+    merged.update(new_names)
+    return merged
+
+
 if __name__ == '__main__':
     # Main execution will be added in later tasks
     pass
