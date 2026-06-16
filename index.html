@@ -137,6 +137,16 @@
       border-color: var(--primary);
     }
 
+    .category-select {
+      padding: 8px 12px;
+      border: 1px solid var(--hairline);
+      border-radius: 4px;
+      background: var(--canvas);
+      font-size: 14px;
+      cursor: pointer;
+      min-width: 150px;
+    }
+
     /* Emoji Grid */
     .emoji-grid {
       display: grid;
@@ -256,6 +266,23 @@
       <div class="search-group">
         <input type="text" class="search-input" placeholder="搜索emoji... (如: smile / 微笑)">
         <button class="search-btn" id="searchBtn">搜索</button>
+      </div>
+      <div class="control-group">
+        <span class="control-label">分类:</span>
+        <select class="category-select" id="categorySelect">
+          <option value="all">📋 全部 (3689)</option>
+          <option value="People & Body">👋 人物与身体 (2051)</option>
+          <option value="Other">❓ 其他 (323)</option>
+          <option value="Flags">🏁 旗帜 (294)</option>
+          <option value="Objects">💡 物品 (208)</option>
+          <option value="Travel & Places">🚗 旅行与地点 (169)</option>
+          <option value="Smileys & Emotion">😊 表情与情感 (153)</option>
+          <option value="Symbols">🔣 符号 (144)</option>
+          <option value="Animals & Nature">🐻 动物与自然 (144)</option>
+          <option value="Food & Drink">🍎 食物与饮品 (124)</option>
+          <option value="Activities">⚽ 活动 (74)</option>
+          <option value="Component">🏷️ 组件 (5)</option>
+        </select>
       </div>
       <div class="control-group">
         <span class="control-label">每页:</span>
