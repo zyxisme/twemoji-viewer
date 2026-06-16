@@ -54,6 +54,9 @@ https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/{codepoint}.svg
 
 ## Emoji Category Data
 - Source: `unicode-emoji-json` repository (cloned to project root)
-- Generation script: See `docs/superpowers/plans/2026-06-16-emoji-category-filter.md`
-- 11 categories: Smileys & Emotion, People & Body, Animals & Nature, Food & Drink, Activities, Travel & Places, Objects, Symbols, Flags, Component, Other
-- 323 emojis fall into "Other" (not in unicode-emoji-json source)
+- Generation script: `generate_emoji_categories.py` (run to regenerate `emoji_category_map.json`)
+- 11 categories: Smileys & Emotion, People & Body, Animals & Nature, Food & Drink, Activities, Travel & Places, Objects, Symbols, Flags, Component
+- 100% coverage: all 3689 codepoints mapped (no "Other" category)
+- unicode-emoji-json uses `group` field (not `category`)
+- Variant handling: FE0F, skin tones (1f3fb-1f3ff), ZWJ sequences
+- Single regional indicators (1f1e6-1f1ff) = Component, not Flags
