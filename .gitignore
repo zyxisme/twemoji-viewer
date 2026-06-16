@@ -13,5 +13,6 @@ Thumbs.db
 *.tmp
 *.bak
 
-# Cloned twemoji repo (reference only)
+# Cloned repos (reference only)
 twemoji/
+unicode-emoji-json/
