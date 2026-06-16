@@ -16,3 +16,14 @@ Thumbs.db
 # Cloned repos (reference only)
 twemoji/
 unicode-emoji-json/
+
+# Local development files
+CLAUDE.md
+DESIGN.md
+README.md
+docs/
+*.py
+test_*.py
+*.json
+__pycache__/
+.pytest_cache/
