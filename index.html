@@ -4049,7 +4049,7 @@
         document.getElementById('pageSizeSelect').value = pageSize;
       }
 
-      if (savedCategory) {
+      if (savedCategory && CATEGORIES[savedCategory]) {
         currentCategory = savedCategory;
         document.getElementById('categorySelect').value = currentCategory;
       }
