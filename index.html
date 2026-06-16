@@ -308,7 +308,7 @@
         </select>
       </div>
       <div class="control-group">
-        <button class="case-toggle" id="caseToggle">A/a</button>
+        <button class="case-toggle" id="caseToggle">abc</button>
       </div>
       <div class="control-group">
         <button class="lang-toggle" id="langToggle">🌍 中</button>
@@ -7816,7 +7816,7 @@
 
       if (savedCase === 'upper') {
         isUpperCase = true;
-        document.getElementById('caseToggle').classList.add('active');
+        document.getElementById('caseToggle').textContent = 'ABC';
       }
 
       if (savedPageSize) {
@@ -11770,7 +11770,7 @@
 
     document.getElementById('caseToggle').addEventListener('click', function() {
       isUpperCase = !isUpperCase;
-      this.classList.toggle('active');
+      this.textContent = isUpperCase ? 'ABC' : 'abc';
       localStorage.setItem('twemoji-case', isUpperCase ? 'upper' : 'lower');
       renderGrid();
     });
