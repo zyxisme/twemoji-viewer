@@ -20,7 +20,6 @@ unicode-emoji-json/
 # Local development files
 CLAUDE.md
 DESIGN.md
-README.md
 docs/
 *.py
 test_*.py
