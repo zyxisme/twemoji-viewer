@@ -108,6 +108,62 @@ def merge_emoji_names(existing_names, new_names):
     return merged
 
 
+def update_index_html(index_path, new_names):
+    """Update EMOJI_NAMES in index.html
+
+    Args:
+        index_path: Path to index.html
+        new_names: Dictionary of new names to add
+
+    Returns:
+        True if successful, False otherwise
+    """
+    try:
+        with open(index_path, 'r', encoding='utf-8') as f:
+            content = f.read()
+    except FileNotFoundError:
+        print(f"❌ File not found: {index_path}")
+        return False
+
+    # Find EMOJI_NAMES object
+    pattern = r"const EMOJI_NAMES\s*=\s*\{(.+)\}\s*;"
+    match = re.search(pattern, content, re.DOTALL)
+    if not match:
+        print("❌ Could not find EMOJI_NAMES in index.html")
+        return False
+
+    # Generate new EMOJI_NAMES string
+    names_str = match.group(1)
+
+    # Add new flag names
+    additions = []
+    for codepoints, names in sorted(new_names.items()):
+        additions.append(
+            f"      '{codepoints}': {{ en: '{names['en']}', zh: '{names['zh']}' }}"
+        )
+
+    # Append to EMOJI_NAMES object
+    if additions:
+        # Find the last entry
+        last_entry_pattern = r"('[0-9a-f]+(?:-[0-9a-f]+)*':\s*\{[^}]+\})"
+        last_match = re.search(last_entry_pattern + r"(?![\s\S]*\1)", names_str)
+        if last_match:
+            insert_pos = last_match.end()
+            new_additions = ",\n" + ",\n".join(additions)
+            names_str = names_str[:insert_pos] + new_additions + names_str[insert_pos:]
+
+    # Replace EMOJI_NAMES object
+    new_content = content[:match.start()] + f"const EMOJI_NAMES = {{{names_str}}};" + content[match.end():]
+
+    try:
+        with open(index_path, 'w', encoding='utf-8') as f:
+            f.write(new_content)
+        return True
+    except Exception as e:
+        print(f"❌ Failed to write file: {e}")
+        return False
+
+
 if __name__ == '__main__':
     # Main execution will be added in later tasks
     pass
