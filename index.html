@@ -7722,12 +7722,21 @@
 
     // Current category filter
     let currentCategory = 'all';
+    let currentLang = 'zh';
 
     // Initialize application
     function init() {
       const savedCase = localStorage.getItem('twemoji-case');
       const savedPageSize = localStorage.getItem('twemoji-page-size');
       const savedCategory = localStorage.getItem('twemoji-category');
+      const savedLang = localStorage.getItem('twemoji-lang');
+      if (savedLang) {
+        currentLang = savedLang;
+      } else {
+        // Auto-detect from browser language
+        const browserLang = navigator.language || navigator.userLanguage;
+        currentLang = browserLang.startsWith('zh') ? 'zh' : 'en';
+      }
 
       if (savedCase === 'upper') {
         isUpperCase = true;
@@ -11511,6 +11520,57 @@
 '2764': { en: 'heart love red', zh: '心 爱 红心' }
     
     };
+
+    // Translations for i18n
+    const translations = {
+      zh: {
+        title: 'Twemoji Viewer',
+        subtitle: '点击表情复制编号，支持多语种搜索',
+        searchPlaceholder: '搜索emoji... (如: smile / 微笑)',
+        searchBtn: '搜索',
+        categoryLabel: '分类:',
+        pageSizeLabel: '每页:',
+        emptyState: '未找到匹配的emoji',
+        categoryAll: '全部',
+        categoryPeople: '人物与身体',
+        categoryFlags: '旗帜',
+        categoryObjects: '物品',
+        categoryTravel: '旅行与地点',
+        categorySmileys: '表情与情感',
+        categorySymbols: '符号',
+        categoryAnimals: '动物与自然',
+        categoryFood: '食物与饮品',
+        categoryActivities: '活动',
+        categoryComponent: '组件',
+        categoryOther: '其他'
+      },
+      en: {
+        title: 'Twemoji Viewer',
+        subtitle: 'Click emoji to copy codepoint, supports multilingual search',
+        searchPlaceholder: 'Search emoji... (e.g.: smile / 微笑)',
+        searchBtn: 'Search',
+        categoryLabel: 'Category:',
+        pageSizeLabel: 'Per page:',
+        emptyState: 'No matching emojis found',
+        categoryAll: 'All',
+        categoryPeople: 'People & Body',
+        categoryFlags: 'Flags',
+        categoryObjects: 'Objects',
+        categoryTravel: 'Travel & Places',
+        categorySmileys: 'Smileys & Emotion',
+        categorySymbols: 'Symbols',
+        categoryAnimals: 'Animals & Nature',
+        categoryFood: 'Food & Drink',
+        categoryActivities: 'Activities',
+        categoryComponent: 'Component',
+        categoryOther: 'Other'
+      }
+    };
+
+    // Translation helper function
+    function t(key) {
+      return translations[currentLang][key] || translations['zh'][key] || key;
+    }
 
     // Render pagination controls
     function renderPagination() {
