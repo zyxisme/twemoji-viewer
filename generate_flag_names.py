@@ -164,6 +164,105 @@ def update_index_html(index_path, new_names):
         return False
 
 
+def read_json_file(file_path):
+    """Safely read JSON file"""
+    try:
+        with open(file_path, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    except FileNotFoundError:
+        print(f"❌ File not found: {file_path}")
+        return None
+    except json.JSONDecodeError as e:
+        print(f"❌ JSON format error: {file_path}")
+        print(f"   Error message: {e}")
+        return None
+
+
+def read_emoji_list_from_html(index_path):
+    """Read EMOJI_LIST from index.html"""
+    try:
+        with open(index_path, 'r', encoding='utf-8') as f:
+            content = f.read()
+    except FileNotFoundError:
+        print(f"❌ File not found: {index_path}")
+        return None
+
+    match = re.search(r"const EMOJI_LIST\s*=\s*\[(.*?)\];", content, re.DOTALL)
+    if not match:
+        print("❌ Could not find EMOJI_LIST in index.html")
+        return None
+
+    emoji_list_str = match.group(1)
+    return [m.group(1) for m in re.finditer(r'"([0-9a-f]+(?:-[0-9a-f]+)*)"', emoji_list_str)]
+
+
+def main():
+    """Main execution function"""
+    print("🚀 Starting flag search name generation...\n")
+
+    # 1. Read unicode-emoji-json data
+    print("📖 Reading unicode-emoji-json data...")
+    emoji_data = read_json_file('unicode-emoji-json/data-by-emoji.json')
+    if not emoji_data:
+        return False
+
+    # 2. Extract flag data
+    flags = extract_flag_data(emoji_data)
+    print(f"✅ Found {len(flags)} flag emojis\n")
+
+    # 3. Read EMOJI_LIST
+    print("📖 Reading EMOJI_LIST...")
+    emoji_list = read_emoji_list_from_html('index.html')
+    if not emoji_list:
+        return False
+
+    flag_count = sum(1 for e in emoji_list if e.startswith('1f1e') or e.startswith('1f1f'))
+    print(f"✅ Found {flag_count} flag codepoints\n")
+
+    # 4. Match flags to EMOJI_LIST
+    print("🔗 Matching flags...")
+    matched = match_flags_to_emoji_list(flags, emoji_list)
+    print(f"✅ Successfully matched {len(matched)} flags")
+
+    # Find unmatched
+    unmatched_in_list = [
+        e for e in emoji_list
+        if (e.startswith('1f1e') or e.startswith('1f1f')) and e not in matched
+    ]
+    if unmatched_in_list:
+        print(f"⚠️  {len(unmatched_in_list)} flags in EMOJI_LIST unmatched")
+    print()
+
+    # 5. Read Chinese names
+    print("📖 Reading country/region Chinese names...")
+    country_names_cn = read_json_file('country_names_cn.json')
+    if not country_names_cn:
+        return False
+    print(f"✅ Loaded {len(country_names_cn)} Chinese names\n")
+
+    # 6. Generate search names
+    print("✏️  Generating search names...")
+    new_names = generate_search_names(matched, country_names_cn)
+    print(f"✅ Generated {len(new_names)} flag search names\n")
+
+    # 7. Update index.html
+    print("📝 Updating index.html...")
+    success = update_index_html('index.html', new_names)
+    if not success:
+        return False
+    print("✅ Successfully updated EMOJI_NAMES\n")
+
+    # Summary
+    print("=" * 50)
+    print("📊 Generation Report:")
+    print(f"✅ Successfully generated {len(new_names)} flag search names")
+    if unmatched_in_list:
+        print(f"⚠️  {len(unmatched_in_list)} flags unmatched")
+    print("=" * 50)
+
+    return True
+
+
 if __name__ == '__main__':
-    # Main execution will be added in later tasks
-    pass
+    success = main()
+    exit(0 if success else 1)
