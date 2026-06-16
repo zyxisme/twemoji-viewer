@@ -7,7 +7,11 @@ import os
 # Add parent directory to path to import generate_flag_names
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from generate_flag_names import extract_flag_data, match_flags_to_emoji_list
+from generate_flag_names import (
+    extract_flag_data,
+    match_flags_to_emoji_list,
+    generate_search_names
+)
 
 
 class TestExtractFlagData(unittest.TestCase):
@@ -144,6 +148,82 @@ class TestMatchFlagsToEmojiList(unittest.TestCase):
         result = match_flags_to_emoji_list(flags, emoji_list)
 
         self.assertEqual(len(result), 0)
+
+
+class TestGenerateSearchNames(unittest.TestCase):
+    """Test generate_search_names function"""
+
+    def test_generate_english_name(self):
+        """Test English name generation"""
+        matched_flags = {
+            '1f1e8-1f1f3': {'country_code': 'CN', 'name': 'flag China'}
+        }
+        country_names_cn = {'CN': '中国'}
+
+        result = generate_search_names(matched_flags, country_names_cn)
+
+        self.assertEqual(result['1f1e8-1f1f3']['en'], 'flag China CN')
+
+    def test_generate_chinese_name(self):
+        """Test Chinese name generation"""
+        matched_flags = {
+            '1f1e8-1f1f3': {'country_code': 'CN', 'name': 'flag China'}
+        }
+        country_names_cn = {'CN': '中国'}
+
+        result = generate_search_names(matched_flags, country_names_cn)
+
+        self.assertEqual(result['1f1e8-1f1f3']['zh'], '中国')
+
+    def test_generate_multiple_flags(self):
+        """Test generating names for multiple flags"""
+        matched_flags = {
+            '1f1e8-1f1f3': {'country_code': 'CN', 'name': 'flag China'},
+            '1f1fa-1f1f8': {'country_code': 'US', 'name': 'flag United States'}
+        }
+        country_names_cn = {'CN': '中国', 'US': '美国'}
+
+        result = generate_search_names(matched_flags, country_names_cn)
+
+        self.assertEqual(len(result), 2)
+        self.assertEqual(result['1f1e8-1f1f3']['en'], 'flag China CN')
+        self.assertEqual(result['1f1fa-1f1f8']['en'], 'flag United States US')
+
+    def test_fallback_to_english_name(self):
+        """Test fallback when Chinese name is missing"""
+        matched_flags = {
+            '1f1e8-1f1f3': {'country_code': 'CN', 'name': 'flag China'}
+        }
+        country_names_cn = {}  # Empty mapping
+
+        result = generate_search_names(matched_flags, country_names_cn)
+
+        # Should use English name as fallback
+        self.assertEqual(result['1f1e8-1f1f3']['zh'], 'flag China')
+
+    def test_handle_flag_prefix(self):
+        """Test that 'flag ' prefix is handled correctly"""
+        matched_flags = {
+            '1f1e8-1f1f3': {'country_code': 'CN', 'name': 'flag China'}
+        }
+        country_names_cn = {'CN': '中国'}
+
+        result = generate_search_names(matched_flags, country_names_cn)
+
+        # Should be "flag China CN", not "flag flag China CN"
+        self.assertEqual(result['1f1e8-1f1f3']['en'], 'flag China CN')
+
+    def test_handle_name_without_prefix(self):
+        """Test handling name without 'flag ' prefix"""
+        matched_flags = {
+            '1f1e8-1f1f3': {'country_code': 'CN', 'name': 'China'}
+        }
+        country_names_cn = {'CN': '中国'}
+
+        result = generate_search_names(matched_flags, country_names_cn)
+
+        # Should be "flag China CN"
+        self.assertEqual(result['1f1e8-1f1f3']['en'], 'flag China CN')
 
 
 if __name__ == '__main__':
