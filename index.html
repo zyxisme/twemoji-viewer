@@ -7741,6 +7741,65 @@
     let currentCategory = 'all';
     let currentLang = 'zh';
 
+    // Apply translations to all UI elements
+    function applyTranslations() {
+      // Update language toggle button
+      document.getElementById('langToggle').textContent = currentLang === 'zh' ? '🌍 中' : '🌍 EN';
+
+      // Update header
+      document.querySelector('.header h1').textContent = t('title');
+      document.querySelector('.header p').textContent = t('subtitle');
+
+      // Update search
+      document.querySelector('.search-input').placeholder = t('searchPlaceholder');
+      document.getElementById('searchBtn').textContent = t('searchBtn');
+
+      // Update labels
+      document.querySelectorAll('.control-label').forEach(function(label) {
+        if (label.textContent.includes('分类') || label.textContent.includes('Category')) {
+          label.textContent = t('categoryLabel');
+        }
+        if (label.textContent.includes('每页') || label.textContent.includes('Per page')) {
+          label.textContent = t('pageSizeLabel');
+        }
+      });
+
+      // Update category options
+      const categorySelect = document.getElementById('categorySelect');
+      const categoryOptions = categorySelect.options;
+      for (let i = 0; i < categoryOptions.length; i++) {
+        const value = categoryOptions[i].value;
+        if (value === 'all') {
+          categoryOptions[i].textContent = '📋 ' + t('categoryAll');
+        } else if (value === 'People & Body') {
+          categoryOptions[i].textContent = '👋 ' + t('categoryPeople');
+        } else if (value === 'Flags') {
+          categoryOptions[i].textContent = '🏁 ' + t('categoryFlags');
+        } else if (value === 'Objects') {
+          categoryOptions[i].textContent = '💡 ' + t('categoryObjects');
+        } else if (value === 'Travel & Places') {
+          categoryOptions[i].textContent = '🚗 ' + t('categoryTravel');
+        } else if (value === 'Smileys & Emotion') {
+          categoryOptions[i].textContent = '😊 ' + t('categorySmileys');
+        } else if (value === 'Symbols') {
+          categoryOptions[i].textContent = '🔣 ' + t('categorySymbols');
+        } else if (value === 'Animals & Nature') {
+          categoryOptions[i].textContent = '🐻 ' + t('categoryAnimals');
+        } else if (value === 'Food & Drink') {
+          categoryOptions[i].textContent = '🍎 ' + t('categoryFood');
+        } else if (value === 'Activities') {
+          categoryOptions[i].textContent = '⚽ ' + t('categoryActivities');
+        } else if (value === 'Component') {
+          categoryOptions[i].textContent = '🏷️ ' + t('categoryComponent');
+        } else if (value === 'Other') {
+          categoryOptions[i].textContent = '❓ ' + t('categoryOther');
+        }
+      }
+
+      // Re-render grid to update emoji names
+      renderGrid();
+    }
+
     // Initialize application
     function init() {
       const savedCase = localStorage.getItem('twemoji-case');
@@ -7771,6 +7830,7 @@
       }
 
       filterEmojis();
+      applyTranslations();
     }
 
     // Get emoji image URL
