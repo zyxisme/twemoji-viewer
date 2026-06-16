@@ -7730,11 +7730,11 @@
       const savedPageSize = localStorage.getItem('twemoji-page-size');
       const savedCategory = localStorage.getItem('twemoji-category');
       const savedLang = localStorage.getItem('twemoji-lang');
-      if (savedLang) {
+      if (savedLang && translations[savedLang]) {
         currentLang = savedLang;
       } else {
         // Auto-detect from browser language
-        const browserLang = navigator.language || navigator.userLanguage;
+        const browserLang = navigator.language;
         currentLang = browserLang.startsWith('zh') ? 'zh' : 'en';
       }
 
@@ -11569,7 +11569,7 @@
 
     // Translation helper function
     function t(key) {
-      return translations[currentLang][key] || translations['zh'][key] || key;
+      return translations[currentLang][key] ?? translations['zh'][key] ?? key;
     }
 
     // Render pagination controls
