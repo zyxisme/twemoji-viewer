@@ -18,7 +18,7 @@ https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/{codepoint}.svg
 
 ### Data
 - `EMOJI_LIST`: 3689 twemoji codepoints (array in index.html)
-- `EMOJI_NAMES`: 679 entries with English/Chinese names for search (object in index.html)
+- `EMOJI_NAMES`: 937 entries with English/Chinese names for search (object in index.html), including 258 flag names
 - `EMOJI_CATEGORY_MAP`: 3689 codepoint-to-category mappings (generated from unicode-emoji-json)
 - `CATEGORIES`: Category display info with name/icon for 12 categories
 
