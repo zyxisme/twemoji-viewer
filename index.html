@@ -155,6 +155,127 @@
       min-width: 150px;
     }
 
+    /* Advanced Settings */
+    .advanced-settings {
+      margin-bottom: 20px;
+      border: 1px solid var(--hairline);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .advanced-toggle {
+      width: 100%;
+      padding: 12px 16px;
+      background: var(--canvas-soft);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--primary);
+      transition: background 0.2s;
+    }
+
+    .advanced-toggle:hover {
+      background: var(--hairline);
+    }
+
+    .advanced-toggle .arrow {
+      transition: transform 0.2s;
+    }
+
+    .advanced-toggle.active .arrow {
+      transform: rotate(180deg);
+    }
+
+    .advanced-content {
+      display: none;
+      padding: 16px;
+      background: var(--canvas);
+      border-top: 1px solid var(--hairline);
+    }
+
+    .advanced-content.show {
+      display: block;
+    }
+
+    .setting-row {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      margin-bottom: 16px;
+    }
+
+    .setting-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .setting-label {
+      font-size: 13px;
+      color: var(--mute);
+      min-width: 120px;
+      padding-top: 8px;
+    }
+
+    .setting-input-group {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .setting-input {
+      padding: 8px 12px;
+      border: 1px solid var(--hairline);
+      border-radius: 4px;
+      background: var(--canvas);
+      font-size: 14px;
+      font-family: monospace;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .setting-input:focus {
+      border-color: var(--link);
+    }
+
+    .setting-hint {
+      font-size: 12px;
+      color: var(--mute);
+    }
+
+    .setting-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .setting-btn {
+      padding: 6px 12px;
+      border: 1px solid var(--hairline);
+      border-radius: 4px;
+      background: var(--canvas);
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .setting-btn:hover {
+      background: var(--canvas-soft);
+    }
+
+    .setting-btn.primary {
+      background: var(--primary);
+      color: var(--on-primary);
+      border-color: var(--primary);
+    }
+
+    .setting-btn.primary:hover {
+      opacity: 0.9;
+    }
+
     /* Emoji Grid */
     .emoji-grid {
       display: grid;
@@ -322,6 +443,33 @@
       </div>
       <div class="control-group">
         <button class="lang-toggle" id="langToggle">🌍 中</button>
+      </div>
+    </div>
+
+    <div class="advanced-settings" id="advancedSettings">
+      <button class="advanced-toggle" id="advancedToggle">
+        <span>⚙️ <span id="advancedLabel">高级设置</span></span>
+        <span class="arrow">▼</span>
+      </button>
+      <div class="advanced-content" id="advancedContent">
+        <div class="setting-row">
+          <span class="setting-label" id="cdnLabel">CDN 地址:</span>
+          <div class="setting-input-group">
+            <input type="text" class="setting-input" id="cdnInput" placeholder="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/">
+            <span class="setting-hint" id="cdnHint">Twemoji 图片来源地址，需包含 {codepoint}.svg</span>
+          </div>
+        </div>
+        <div class="setting-row">
+          <span class="setting-label" id="templateLabel">复制模板:</span>
+          <div class="setting-input-group">
+            <input type="text" class="setting-input" id="templateInput" placeholder="{id}">
+            <span class="setting-hint" id="templateHint">使用 {id} 作为占位符，如: "&lt;emoji:{id}&gt;" 或 "a,{id},b"</span>
+          </div>
+        </div>
+        <div class="setting-actions">
+          <button class="setting-btn primary" id="saveSettings" onclick="saveAdvancedSettings()">保存</button>
+          <button class="setting-btn" id="resetSettings" onclick="resetAdvancedSettings()">重置</button>
+        </div>
       </div>
     </div>
 
@@ -7751,6 +7899,62 @@
     let currentCategory = 'all';
     let currentLang = 'zh';
 
+    // Advanced settings
+    const DEFAULT_CDN = 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/';
+    const DEFAULT_TEMPLATE = '{id}';
+    let customCdn = DEFAULT_CDN;
+    let copyTemplate = DEFAULT_TEMPLATE;
+
+    // Advanced settings functions
+    function toggleAdvancedSettings() {
+      const content = document.getElementById('advancedContent');
+      const toggle = document.getElementById('advancedToggle');
+      content.classList.toggle('show');
+      toggle.classList.toggle('active');
+    }
+
+    function saveAdvancedSettings() {
+      const cdnInput = document.getElementById('cdnInput').value.trim();
+      const templateInput = document.getElementById('templateInput').value.trim();
+
+      customCdn = cdnInput || DEFAULT_CDN;
+      copyTemplate = templateInput || DEFAULT_TEMPLATE;
+
+      localStorage.setItem('twemoji-cdn', customCdn);
+      localStorage.setItem('twemoji-template', copyTemplate);
+
+      renderGrid();
+      alert(t('settingsSaved'));
+    }
+
+    function resetAdvancedSettings() {
+      document.getElementById('cdnInput').value = '';
+      document.getElementById('templateInput').value = '';
+
+      customCdn = DEFAULT_CDN;
+      copyTemplate = DEFAULT_TEMPLATE;
+
+      localStorage.removeItem('twemoji-cdn');
+      localStorage.removeItem('twemoji-template');
+
+      renderGrid();
+      alert(t('settingsReset'));
+    }
+
+    function loadAdvancedSettings() {
+      const savedCdn = localStorage.getItem('twemoji-cdn');
+      const savedTemplate = localStorage.getItem('twemoji-template');
+
+      if (savedCdn) {
+        customCdn = savedCdn;
+        document.getElementById('cdnInput').value = savedCdn;
+      }
+      if (savedTemplate) {
+        copyTemplate = savedTemplate;
+        document.getElementById('templateInput').value = savedTemplate;
+      }
+    }
+
     // Apply translations to all UI elements
     function applyTranslations() {
       // Update language toggle button
@@ -7806,6 +8010,15 @@
         }
       }
 
+      // Update advanced settings labels
+      document.getElementById('advancedLabel').textContent = t('advancedSettings');
+      document.getElementById('cdnLabel').textContent = t('cdnLabel');
+      document.getElementById('cdnHint').textContent = t('cdnHint');
+      document.getElementById('templateLabel').textContent = t('templateLabel');
+      document.getElementById('templateHint').textContent = t('templateHint');
+      document.getElementById('saveSettings').textContent = t('saveBtn');
+      document.getElementById('resetSettings').textContent = t('resetBtn');
+
       // Re-render grid to update emoji names
       renderGrid();
     }
@@ -7839,13 +8052,14 @@
         document.getElementById('categorySelect').value = currentCategory;
       }
 
+      loadAdvancedSettings();
       filterEmojis();
       applyTranslations();
     }
 
     // Get emoji image URL
     function getEmojiUrl(codepoint) {
-      return TWEMOJI_CDN + codepoint + '.svg';
+      return customCdn + codepoint + '.svg';
     }
 
     // Format shortcode based on case setting
@@ -7907,12 +8121,13 @@
     // Copy shortcode to clipboard
     async function copyToClipboard(codepoint, card) {
       const shortcode = formatShortcode(codepoint);
+      const textToCopy = copyTemplate.replace(/\{id\}/g, shortcode);
 
       try {
-        await navigator.clipboard.writeText(shortcode);
+        await navigator.clipboard.writeText(textToCopy);
       } catch (err) {
         const textArea = document.createElement('textarea');
-        textArea.value = shortcode;
+        textArea.value = textToCopy;
         document.body.appendChild(textArea);
         textArea.select();
         document.execCommand('copy');
@@ -11641,7 +11856,16 @@
         categoryFood: '食物与饮品',
         categoryActivities: '活动',
         categoryComponent: '组件',
-        categoryOther: '其他'
+        categoryOther: '其他',
+        advancedSettings: '高级设置',
+        cdnLabel: 'CDN 地址:',
+        cdnHint: 'Twemoji 图片来源地址，需包含 {codepoint}.svg',
+        templateLabel: '复制模板:',
+        templateHint: '使用 {id} 作为占位符，如: "<emoji:{id}>" 或 "a,{id},b"',
+        saveBtn: '保存',
+        resetBtn: '重置',
+        settingsSaved: '设置已保存',
+        settingsReset: '设置已重置'
       },
       en: {
         title: 'Twemoji Viewer',
@@ -11662,7 +11886,16 @@
         categoryFood: 'Food & Drink',
         categoryActivities: 'Activities',
         categoryComponent: 'Component',
-        categoryOther: 'Other'
+        categoryOther: 'Other',
+        advancedSettings: 'Advanced Settings',
+        cdnLabel: 'CDN URL:',
+        cdnHint: 'Twemoji image source URL, must include {codepoint}.svg',
+        templateLabel: 'Copy Template:',
+        templateHint: 'Use {id} as placeholder, e.g.: "<emoji:{id}>" or "a,{id},b"',
+        saveBtn: 'Save',
+        resetBtn: 'Reset',
+        settingsSaved: 'Settings saved',
+        settingsReset: 'Settings reset'
       }
     };
 
@@ -11808,6 +12041,11 @@
       currentCategory = this.value;
       localStorage.setItem('twemoji-category', currentCategory);
       filterEmojis();
+    });
+
+    // Advanced settings toggle
+    document.getElementById('advancedToggle').addEventListener('click', function() {
+      toggleAdvancedSettings();
     });
 
     // Initialize when DOM is ready
