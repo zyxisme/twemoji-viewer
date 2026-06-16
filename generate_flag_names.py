@@ -38,6 +38,27 @@ def extract_flag_data(emoji_data):
     return flags
 
 
+def match_flags_to_emoji_list(flags, emoji_list):
+    """Match flags to EMOJI_LIST
+
+    Args:
+        flags: Dictionary from extract_flag_data
+        emoji_list: List of emoji codepoints from EMOJI_LIST
+
+    Returns:
+        Dictionary mapping codepoints to matched flag data
+    """
+    matched = {}
+    for country_code, flag_data in flags.items():
+        codepoints = flag_data['codepoints']
+        if codepoints in emoji_list:
+            matched[codepoints] = {
+                'country_code': country_code,
+                'name': flag_data['name']
+            }
+    return matched
+
+
 if __name__ == '__main__':
     # Main execution will be added in later tasks
     pass
