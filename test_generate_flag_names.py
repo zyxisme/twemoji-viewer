@@ -11,8 +11,10 @@ from generate_flag_names import (
     extract_flag_data,
     match_flags_to_emoji_list,
     generate_search_names,
-    merge_emoji_names
+    merge_emoji_names,
+    update_index_html
 )
+import tempfile
 
 
 class TestExtractFlagData(unittest.TestCase):
@@ -310,6 +312,99 @@ class TestMergeEmojiNames(unittest.TestCase):
 
         self.assertEqual(len(result), 1)
         self.assertIn('1f446', result)
+
+
+class TestUpdateIndexHtml(unittest.TestCase):
+    """Test update_index_html function"""
+
+    def setUp(self):
+        """Create temporary index.html for testing"""
+        self.test_dir = tempfile.mkdtemp()
+        self.index_path = os.path.join(self.test_dir, 'index.html')
+
+        # Create minimal index.html with EMOJI_NAMES
+        with open(self.index_path, 'w', encoding='utf-8') as f:
+            f.write('''<!DOCTYPE html>
+<html>
+<body>
+<script>
+    const EMOJI_LIST = ["1f446", "1f1e8-1f1f3"];
+    const EMOJI_NAMES = {
+      '1f446': { en: 'point up', zh: '手指向上 指' }
+    };
+</script>
+</body>
+</html>''')
+
+    def tearDown(self):
+        """Clean up temporary files"""
+        import shutil
+        shutil.rmtree(self.test_dir)
+
+    def test_update_adds_flag(self):
+        """Test that update adds flag names"""
+        new_names = {
+            '1f1e8-1f1f3': {'en': 'flag China CN', 'zh': '中国'}
+        }
+
+        result = update_index_html(self.index_path, new_names)
+
+        self.assertTrue(result)
+
+        # Verify the update
+        with open(self.index_path, 'r', encoding='utf-8') as f:
+            content = f.read()
+
+        self.assertIn('flag China CN', content)
+        self.assertIn('中国', content)
+
+    def test_update_preserves_existing(self):
+        """Test that update preserves existing entries"""
+        new_names = {
+            '1f1e8-1f1f3': {'en': 'flag China CN', 'zh': '中国'}
+        }
+
+        update_index_html(self.index_path, new_names)
+
+        with open(self.index_path, 'r', encoding='utf-8') as f:
+            content = f.read()
+
+        self.assertIn('point up', content)
+        self.assertIn('手指向上 指', content)
+
+    def test_update_returns_true_on_success(self):
+        """Test that function returns True on success"""
+        new_names = {
+            '1f1e8-1f1f3': {'en': 'flag China CN', 'zh': '中国'}
+        }
+
+        result = update_index_html(self.index_path, new_names)
+
+        self.assertTrue(result)
+
+    def test_update_returns_false_on_missing_file(self):
+        """Test that function returns False when file doesn't exist"""
+        new_names = {
+            '1f1e8-1f1f3': {'en': 'flag China CN', 'zh': '中国'}
+        }
+
+        result = update_index_html('/nonexistent/path.html', new_names)
+
+        self.assertFalse(result)
+
+    def test_update_returns_false_on_invalid_format(self):
+        """Test that function returns False when EMOJI_NAMES not found"""
+        # Create file without EMOJI_NAMES
+        with open(self.index_path, 'w', encoding='utf-8') as f:
+            f.write('<html><body></body></html>')
+
+        new_names = {
+            '1f1e8-1f1f3': {'en': 'flag China CN', 'zh': '中国'}
+        }
+
+        result = update_index_html(self.index_path, new_names)
+
+        self.assertFalse(result)
 
 
 if __name__ == '__main__':
