@@ -1,68 +1,30 @@
 # 🎨 Twemoji Viewer
 
-A beautiful single-page web app for browsing and copying all Twitter Twemoji icons.
+浏览和复制 Twitter Twemoji 图标的单页应用。
 
-## ✨ Live Demo
+## ✨ 在线演示
 
 🔗 **[https://zyxisme.github.io/twemoji-viewer/](https://zyxisme.github.io/twemoji-viewer/)**
 
-## 📸 Features
+## 📸 功能特性
 
-- 🖼️ **Complete Collection** - Browse all 3,689 Twemoji icons
-- 📋 **One-Click Copy** - Copy emoji shortcodes to clipboard instantly
-- 🔍 **Smart Search** - Search by codepoint, English name, or Chinese name (679 named emojis)
-- 📄 **Pagination** - Configurable page size (20/50/100/200 items)
-- 🎨 **Vercel-style Design** - Clean black & white UI with accent blue
-- 📱 **Responsive** - Works perfectly on mobile and desktop
-- 💾 **Preferences Saved** - Remembers your case style and page size settings
+- 🖼️ **完整收录** - 浏览全部 3,689 个 Twemoji 图标
+- 📋 **一键复制** - 点击即可复制 emoji shortcode
+- 🔍 **智能搜索** - 支持 codepoint、英文名、中文名搜索（679 个命名 emoji）
+- 📄 **分页浏览** - 可配置每页数量（20/50/100/200）
+- 🎨 **Vercel 风格** - 简洁的黑白配色 + 蓝色强调
+- 📱 **响应式设计** - 完美适配移动端和桌面端
+- 💾 **偏好记忆** - 自动保存大小写风格和分页设置
 
-## 🚀 Usage
+## 🛠️ 技术栈
 
-1. Visit the [live demo](https://zyxisme.github.io/twemoji-viewer/)
-2. Browse emojis by scrolling through pages
-3. Use the search bar to find specific emojis
-4. Click any emoji card to copy its shortcode
-5. Toggle between UPPERCASE and lowercase shortcode format
+- 纯 HTML/CSS/JavaScript，零依赖
+- CSS Grid 布局 + Flexbox
+- Twemoji CDN：`cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/`
 
-## 🛠️ Tech Stack
+## 📄 许可证
 
-- **HTML5** - Single page application
-- **CSS3** - Grid layout, Flexbox, CSS Variables
-- **Vanilla JavaScript** - No dependencies, pure JS
-- **Twemoji CDN** - `cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/`
-
-## 📦 Local Development
-
-```bash
-# Clone the repository
-git clone https://github.com/zyxisme/twemoji-viewer.git
-cd twemoji-viewer
-
-# Open in browser
-open index.html
-# or
-python3 -m http.server 8000
-# Then visit http://localhost:8000
-```
-
-## 📁 Project Structure
-
-```
-twemoji-viewer/
-├── index.html          # Main application (all CSS/JS inline)
-├── CLAUDE.md           # Project documentation for AI assistants
-├── DESIGN.md           # Design specifications
-├── docs/               # Planning and spec documents
-└── README.md           # This file
-```
-
-## 🤝 Contributing
-
-Feel free to open issues or submit pull requests!
-
-## 📄 License
-
-This project uses [Twemoji](https://github.com/twitter/twemoji) by Twitter, licensed under [CC-BY 4.0](https://creativecommons.org/licenses/by/4.0/).
+使用 [Twemoji](https://github.com/twitter/twemoji)（Twitter），基于 [CC-BY 4.0](https://creativecommons.org/licenses/by/4.0/) 许可。
 
 ---
 
