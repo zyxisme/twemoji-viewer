@@ -7862,7 +7862,7 @@
       const pageEmojis = filteredEmojis.slice(start, end);
 
       if (pageEmojis.length === 0) {
-        grid.innerHTML = '<div class="empty-state">未找到匹配的emoji</div>';
+        grid.innerHTML = '<div class="empty-state">' + t('emptyState') + '</div>';
         return;
       }
 
